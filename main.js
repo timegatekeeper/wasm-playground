@@ -42,9 +42,9 @@ class PaintBot {
         this.heading = 0;
     }
     update(time) {
-        //let direction = this.commander.exports.update(time);
-        //let vector = vectorMovements[direction];
-        //this.move(vector[0], vector[1]);
+        let direction = this.commander.exports.update(time);
+        let vector = vectorMovements[direction];
+        this.move(vector[0], vector[1]);
         this.render();
     }
     move(x, y) {

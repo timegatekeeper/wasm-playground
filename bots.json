@@ -2,8 +2,5 @@
     "c/leftbot.wasm",
     "c/randombot.wasm",
     "c/sawtooth.wasm",
-    "c/sawtooth.wasm",
-    "c/sawtooth.wasm",
-    "c/sawtooth.wasm",
-    "c/sawtooth.wasm"
+    "c/wallfollower.wasm"
 ]
