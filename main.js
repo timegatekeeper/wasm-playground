@@ -1,9 +1,10 @@
 const canvasElement = document.querySelector('canvas');
 const context = canvasElement.getContext('2d');
-const height = 500;
-const width = 500;
-//let imageData = context.createImageData(width, height);
+const height = canvasElement.height;
+const width = canvasElement.width;
+//this is a global store of compiled web assembly modules
 let modules = [];
+//this is a global store of instantiated modules
 let instances = [];
 let bots = [];
 let position = {
@@ -18,26 +19,43 @@ class Location {
     }
 };
 
-let palette = ['red', 'green', 'blue'];
+class Colour {
+    constructor(r, g, b, a = 255) {
+        this.red = r;
+        this.green = g;
+        this.blue = b;
+        this.alpha = a;
+    }
+    getCSSString() {
+        return "rgba(" + this.red + "," + this.green + "," + this.blue + "," + this.alpha + ")";
+    }
+    toInteger() {
+        return this.red + (this.green*256) + (this.blue*256*256) + (this.alpha*265*256*256);
+    }
+}
 
 class PaintBot {
     constructor(position, colour, commander) {
         this.position = position;
         this.colour = colour;
         this.commander = commander;
+        this.heading = 0;
     }
     update(time) {
-        //context.beginPath();
-        let direction = this.commander.exports.update(time);
-        let vector = vectorMovements[direction];
-        //context.moveTo(this.position.x, this.position.y);
-        this.position.x += vector[0];
-        this.position.y += vector[1];
-        /*context.lineTo(this.position.x, this.position.y);
-        context.closePath();
-        context.stroke();*/
-        context.fillStyle = this.colour;
-        context.fillRect(this.position.x, this.position.y, 1, 1);
+        //let direction = this.commander.exports.update(time);
+        //let vector = vectorMovements[direction];
+        //this.move(vector[0], vector[1]);
+        this.render();
+    }
+    move(x, y) {
+        this.position.x = (this.position.x + x) % width;
+        this.position.y = (this.position.y + y) % height;
+    }
+    render() {
+        context.fillStyle = this.colour.getCSSString();
+        const botLength = 15;
+        const botWidth = 10;
+        context.fillRect(this.position.x, this.position.y, 20, 20);
     }
 };
 
@@ -45,7 +63,11 @@ class PaintBot {
 
 function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
-  }
+}
+
+function getRandomColour() {
+    return new Colour(getRandomInt(256), getRandomInt(256), getRandomInt(256), 255);
+}
 
 async function getBotRoster(rosterUrl) {
     const response = await fetch(rosterUrl);
@@ -58,7 +80,7 @@ async function spawnBots(botUrls) {
         const fetchPromise = fetch(url);
         const { module, instance } = await WebAssembly.instantiateStreaming(fetchPromise);
         let spawnPoint = new Location(getRandomInt(width), getRandomInt(height));
-        let bot = new PaintBot(spawnPoint, palette[idx], instance);
+        let bot = new PaintBot(spawnPoint, getRandomColour(), instance);
         bots.push(bot);
     }
     return bots;
@@ -70,6 +92,7 @@ const vectorMovements = [
 ];
 
 function update(time) {
+    context.clearRect(0, 0, width, height);
     for(const [idx, bot] of bots.entries()) {
         bot.update(time);
     }
