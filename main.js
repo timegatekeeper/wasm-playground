@@ -17,6 +17,10 @@ class Location {
         this.x = x;
         this.y = y;
     }
+    move(x, y) {
+        this.x += x;
+        this.y += y;
+    }
 };
 
 class Colour {
@@ -35,27 +39,33 @@ class Colour {
 }
 
 class PaintBot {
-    constructor(position, colour, commander) {
+    constructor(name, position, colour, commander) {
+        //TO DO: bot can be renamed later
+        this.name = name;
         this.position = position;
         this.colour = colour;
         this.commander = commander;
         this.heading = 0;
+        if(this.commander.exports.init) {
+            console.log(colour.toInteger());
+            this.commander.exports.init(position.x, position.y, width, height);
+        }
     }
     update(time) {
-        let direction = this.commander.exports.update(time);
+        let direction = this.commander.exports.update(time,
+             this.position.x, this.position.y);
         let vector = vectorMovements[direction];
         this.move(vector[0], vector[1]);
         this.render();
     }
     move(x, y) {
-        this.position.x = (this.position.x + x) % width;
-        this.position.y = (this.position.y + y) % height;
+        this.position.move(x, y);
     }
     render() {
         context.fillStyle = this.colour.getCSSString();
         const botLength = 15;
         const botWidth = 10;
-        context.fillRect(this.position.x, this.position.y, 20, 20);
+        context.fillRect(this.position.x-10, this.position.y-10, 20, 20);
     }
 };
 
@@ -74,14 +84,27 @@ async function getBotRoster(rosterUrl) {
     return await response.json();
 }
 
+const importObject = {
+    env : {
+        consoleLog(value) {
+            console.log(value);
+        }
+    }
+};
+
 async function spawnBots(botUrls) {
     let bots = [];
     for (const [idx, url] of botUrls.entries()) {
         const fetchPromise = fetch(url);
-        const { module, instance } = await WebAssembly.instantiateStreaming(fetchPromise);
-        let spawnPoint = new Location(getRandomInt(width), getRandomInt(height));
-        let bot = new PaintBot(spawnPoint, getRandomColour(), instance);
-        bots.push(bot);
+        try {
+            const { module, instance } = await WebAssembly.instantiateStreaming(fetchPromise, importObject);
+            let spawnPoint = new Location(getRandomInt(width), getRandomInt(height));
+            let bot = new PaintBot(url, spawnPoint, getRandomColour(), instance);
+            bots.push(bot);
+        }
+        catch(error) {
+            console.error("Problem with ", url, error);
+        }
     }
     return bots;
 }
