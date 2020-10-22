@@ -21,6 +21,10 @@ class Location {
         this.x += x;
         this.y += y;
     }
+    moveHeadingDistance(heading, distance) {
+        this.x = this.x + Math.floor(distance * Math.sin(heading));
+        this.y = this.y - Math.floor(distance * Math.cos(heading));
+    }
 };
 
 class Colour {
@@ -34,8 +38,22 @@ class Colour {
         return "rgba(" + this.red + "," + this.green + "," + this.blue + "," + this.alpha + ")";
     }
     toInteger() {
-        return this.red + (this.green*256) + (this.blue*256*256) + (this.alpha*265*256*256);
+        return this.red + (this.green*256) + (this.blue*256*256);
     }
+    fromInteger(intColour) {
+        //alpha is fixed
+        this.red = intColour % 256;
+    }
+}
+
+function cssColourFromInteger(intColour) {
+    let mask = "#000000";
+    let css = intColour.toString(16);
+    return mask.substr(0, mask.length - css.length) + css;
+}
+
+function toRadians(degrees) {
+    return degrees*(Math.PI/180);
 }
 
 class PaintBot {
@@ -45,27 +63,42 @@ class PaintBot {
         this.position = position;
         this.colour = colour;
         this.commander = commander;
+        //heading is stored in radians
         this.heading = 0;
         if(this.commander.exports.init) {
-            console.log(colour.toInteger());
-            this.commander.exports.init(position.x, position.y, width, height);
+            this.commander.exports.init(position.x, position.y,
+                 this.colour, width, height);
         }
     }
     update(time) {
-        let direction = this.commander.exports.update(time,
-             this.position.x, this.position.y);
-        let vector = vectorMovements[direction];
-        this.move(vector[0], vector[1]);
+        const wasmExports = this.commander.exports; 
+        let direction = wasmExports.update(time, this.position.x, this.position.y);
+        this.heading = toRadians(angleMovements[direction]);
+        //this.colour.fromInteger(wasmExports.getColour());
+        if(wasmExports.getColour() != this.colour){
+            console.log("colour change from ",
+             cssColourFromInteger(this.colour), " to ",
+             cssColourFromInteger(wasmExports.getColour()));
+            this.colour = wasmExports.getColour();
+        }   
+        this.forward(5)
         this.render();
     }
-    move(x, y) {
-        this.position.move(x, y);
+    forward(distance) {
+        this.position.moveHeadingDistance(this.heading, distance);
     }
     render() {
-        context.fillStyle = this.colour.getCSSString();
-        const botLength = 15;
-        const botWidth = 10;
-        context.fillRect(this.position.x-10, this.position.y-10, 20, 20);
+        context.save();
+        context.translate(this.position.x, this.position.y);
+        context.rotate(this.heading);
+        //TO DO: allow appearance override
+        context.fillStyle = cssColourFromInteger(this.colour);
+        context.beginPath();
+        context.moveTo(0, -10);
+        context.lineTo(10,10);
+        context.lineTo(-10,10);
+        context.fill();
+        context.restore();
     }
 };
 
@@ -76,7 +109,8 @@ function getRandomInt(max) {
 }
 
 function getRandomColour() {
-    return new Colour(getRandomInt(256), getRandomInt(256), getRandomInt(256), 255);
+    return getRandomInt(256*256*256);
+    //return new Colour(getRandomInt(256), getRandomInt(256), getRandomInt(256), 255);
 }
 
 async function getBotRoster(rosterUrl) {
@@ -97,7 +131,8 @@ async function spawnBots(botUrls) {
     for (const [idx, url] of botUrls.entries()) {
         const fetchPromise = fetch(url);
         try {
-            const { module, instance } = await WebAssembly.instantiateStreaming(fetchPromise, importObject);
+            // the imports object should be set here, because 
+            const { module, instance } = await WebAssembly.instantiateStreaming(fetchPromise);
             let spawnPoint = new Location(getRandomInt(width), getRandomInt(height));
             let bot = new PaintBot(url, spawnPoint, getRandomColour(), instance);
             bots.push(bot);
@@ -114,8 +149,10 @@ const vectorMovements = [
     [0,1],[-1,1],[-1,0],[-1,-1]
 ];
 
+const angleMovements = [0, 0, 45, 90, 135, 180, 225, 270, 315]; 
+
 function update(time) {
-    context.clearRect(0, 0, width, height);
+    //context.clearRect(0, 0, width, height);
     for(const [idx, bot] of bots.entries()) {
         bot.update(time);
     }

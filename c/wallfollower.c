@@ -2,7 +2,7 @@ typedef enum Direction {HALT, NORTH, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWES
 
 int x = 0;
 int y = 0;
-int colour = 0;
+unsigned int colour = 0;
 int height;
 int width;
 
@@ -11,46 +11,48 @@ int stepsToTurn = 1;
 
 Direction heading = NORTH;
 
-void consoleLog(int value);
-
-void init(spawnX, spawnY, canvasWidth, canvasHeight) {
+void init(spawnX, spawnY, spawnColour, canvasWidth, canvasHeight) {
     x = spawnX;
     y = spawnY;
-    //colour = spawnColour;
+    colour = spawnColour;
     width = canvasWidth;
     height = canvasHeight;
-    consoleLog(canvasHeight);
-    consoleLog(canvasWidth);
 }
-
 
 Direction update(time, currentX, currentY) {
     switch(heading)
     {
         case NORTH:
-            if((currentY-1) <= 0) {
+            colour = 0xff6347;
+            if((currentY-20) <= 0) {
                 heading = EAST;
             }
             break;
 
         case EAST:
-            consoleLog(currentX);
-            if((currentX+1) >= width) {
+            colour = 0x0000FF;
+            if((currentX+20) >= width) {
                 heading = SOUTH;
             }
             break;
 
         case SOUTH:
-            if((currentY+1) >= height) {
+            colour = 0x8A2BE2;
+            if((currentY+20) >= height) {
                 heading = WEST;
             }
             break;
 
         case WEST:
-            if((currentX-1) <= 0) {
+            colour = 0xB8860B;
+            if((currentX-20) <= 0) {
                 heading = NORTH;
             }
             break;
     }
     return heading;
+}
+
+int getColour() {
+    return colour;
 }
