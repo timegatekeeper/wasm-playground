@@ -98,14 +98,14 @@ class PaintBot {
     update(time) {
         const wasmExports = this.commander.exports; 
         let direction = wasmExports.update(time, this.position.x, this.position.y);
-        this.heading = toRadians(angleMovements[direction]);
+        this.heading = toRadians(direction);
         let wasmColour = wasmExports.getColour();
         let wasmPenDown =  wasmExports.isPenDown();
         let newTrail = !this.isPenDown && wasmPenDown;
         if((this.colour != wasmColour) || newTrail){
-            console.log(this.name, "colour change from",
+           /* console.log(this.name, "colour change from",
              cssColourFromInteger(this.colour), "to",
-             cssColourFromInteger(wasmColour));
+             cssColourFromInteger(wasmColour));*/
             this.colour = wasmColour;
             this.paintTrails.push(new PaintTrail(
                 new Location(this.position.x, this.position.y), this.colour));
@@ -116,6 +116,7 @@ class PaintBot {
     }
     forward(distance) {
         this.position.moveHeadingDistance(this.heading, distance);
+        //to do  - add point when heading change , otherwise edit
         if(this.penDown) {
             this.paintTrails[this.paintTrails.length-1].add(new Location(this.position.x, this.position.y));
         }
