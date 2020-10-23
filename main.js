@@ -22,8 +22,8 @@ class Location {
         this.y += y;
     }
     moveHeadingDistance(heading, distance) {
-        this.x = this.x + Math.floor(distance * Math.sin(heading));
-        this.y = this.y - Math.floor(distance * Math.cos(heading));
+        this.x = this.x + Math.round(distance * Math.sin(heading));
+        this.y = this.y - Math.round(distance * Math.cos(heading));
     }
 };
 
