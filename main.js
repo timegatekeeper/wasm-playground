@@ -2,6 +2,15 @@ const canvasElement = document.querySelector('canvas');
 const context = canvasElement.getContext('2d');
 const height = canvasElement.height;
 const width = canvasElement.width;
+const fileSelectorElement = document.querySelector("input");
+fileSelectorElement.addEventListener("change", handleFiles, false);
+async function loadModule(moduleBinary) {
+    console.log(moduleBinary);
+}
+
+function handleFiles() {
+    loadModule(this.files[0]);
+}
 let imageData = new ImageData(width, height);
 //this is a global store of compiled web assembly modules
 let modules = [];
