@@ -23,28 +23,28 @@ Direction update(time, currentX, currentY) {
     switch(heading)
     {
         case NORTH:
-            colour = 0xff6347;
+            //colour = 0xff6347;
             if((currentY-20) <= 0) {
                 heading = EAST;
             }
             break;
 
         case EAST:
-            colour = 0x0000FF;
+            //colour = 0x0000FF;
             if((currentX+20) >= width) {
                 heading = SOUTH;
             }
             break;
 
         case SOUTH:
-            colour = 0x8A2BE2;
+            //colour = 0x8A2BE2;
             if((currentY+20) >= height) {
                 heading = WEST;
             }
             break;
 
         case WEST:
-            colour = 0xB8860B;
+            //colour = 0xB8860B;
             if((currentX-20) <= 0) {
                 heading = NORTH;
             }

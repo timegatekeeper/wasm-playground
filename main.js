@@ -27,7 +27,7 @@ class Location {
     }
 };
 
-class Colour {
+/*class Colour {
     constructor(r, g, b, a = 255) {
         this.red = r;
         this.green = g;
@@ -44,7 +44,7 @@ class Colour {
         //alpha is fixed
         this.red = intColour % 256;
     }
-}
+}*/
 
 function cssColourFromInteger(intColour) {
     let mask = "#000000";
@@ -55,8 +55,6 @@ function cssColourFromInteger(intColour) {
 function toRadians(degrees) {
     return degrees*(Math.PI/180);
 }
-
-let paintTrails = [];
 
 class PaintTrail {
     constructor(startingLocation, colour) {
@@ -74,6 +72,7 @@ class PaintTrail {
         context.strokeStyle = cssColourFromInteger(this.colour);
         for(const [idx, point] of this.points.entries()) {
             context.lineTo(point.x, point.y);
+            //console.log(point.x,",",point.y);
         }
         context.stroke();
         context.closePath();
@@ -93,27 +92,27 @@ class PaintBot {
             this.commander.exports.init(position.x, position.y,
                  this.colour, width, height);
         }
-        //need to store a paint trail
-        this.paintTrail = new PaintTrail(this.position, this.colour);
-        paintTrails.push(this.paintTrail);
+        this.paintTrails = [new PaintTrail(new Location(this.position.x, this.position.y), this.colour)];
     }
     update(time) {
         const wasmExports = this.commander.exports; 
         let direction = wasmExports.update(time, this.position.x, this.position.y);
         this.heading = toRadians(angleMovements[direction]);
-        //this.colour.fromInteger(wasmExports.getColour());
-        if(wasmExports.getColour() != this.colour){
+        let wasmColour = wasmExports.getColour();
+        if(this.colour != wasmColour){
             console.log(this.name, "colour change from",
              cssColourFromInteger(this.colour), "to",
-             cssColourFromInteger(wasmExports.getColour()));
-            this.colour = wasmExports.getColour();
+             cssColourFromInteger(wasmColour));
+            this.colour = wasmColour;
+            this.paintTrails.push(new PaintTrail(
+                new Location(this.position.x, this.position.y), this.colour));
         }   
         this.forward(5)
         this.render();
     }
     forward(distance) {
         this.position.moveHeadingDistance(this.heading, distance);
-        this.paintTrail.add(new Location(this.position.x, this.position.y));
+        this.paintTrails[this.paintTrails.length-1].add(new Location(this.position.x, this.position.y));
     }
     render() {
         context.save();
@@ -127,6 +126,9 @@ class PaintBot {
         context.lineTo(-10,10);
         context.fill();
         context.restore();
+        for(const [idx, trail] of this.paintTrails.entries()) {
+            trail.render();
+        }
     }
 };
 
@@ -183,9 +185,6 @@ function update(time) {
     context.clearRect(0, 0, width, height);
     for(const [idx, bot] of bots.entries()) {
         bot.update(time);
-    }
-    for(const [idx, trail] of paintTrails.entries()) {
-        trail.render();
     }
     requestAnimationFrame(update);
 }
