@@ -56,6 +56,30 @@ function toRadians(degrees) {
     return degrees*(Math.PI/180);
 }
 
+let paintTrails = [];
+
+class PaintTrail {
+    constructor(startingLocation, colour) {
+        this.start = startingLocation;
+        this.colour = colour;
+        this.points = [];
+    }
+    add(location) {
+        this.points.push(location);
+    }
+    render()
+    {
+        context.beginPath();
+        context.moveTo(this.start.x, this.start.y);
+        context.strokeStyle = cssColourFromInteger(this.colour);
+        for(const [idx, point] of this.points.entries()) {
+            context.lineTo(point.x, point.y);
+        }
+        context.stroke();
+        context.closePath();
+    }
+}
+
 class PaintBot {
     constructor(name, position, colour, commander) {
         //TO DO: bot can be renamed later
@@ -69,6 +93,9 @@ class PaintBot {
             this.commander.exports.init(position.x, position.y,
                  this.colour, width, height);
         }
+        //need to store a paint trail
+        this.paintTrail = new PaintTrail(this.position, this.colour);
+        paintTrails.push(this.paintTrail);
     }
     update(time) {
         const wasmExports = this.commander.exports; 
@@ -76,8 +103,8 @@ class PaintBot {
         this.heading = toRadians(angleMovements[direction]);
         //this.colour.fromInteger(wasmExports.getColour());
         if(wasmExports.getColour() != this.colour){
-            console.log("colour change from ",
-             cssColourFromInteger(this.colour), " to ",
+            console.log(this.name, "colour change from",
+             cssColourFromInteger(this.colour), "to",
              cssColourFromInteger(wasmExports.getColour()));
             this.colour = wasmExports.getColour();
         }   
@@ -86,6 +113,7 @@ class PaintBot {
     }
     forward(distance) {
         this.position.moveHeadingDistance(this.heading, distance);
+        this.paintTrail.add(new Location(this.position.x, this.position.y));
     }
     render() {
         context.save();
@@ -152,9 +180,12 @@ const vectorMovements = [
 const angleMovements = [0, 0, 45, 90, 135, 180, 225, 270, 315]; 
 
 function update(time) {
-    //context.clearRect(0, 0, width, height);
+    context.clearRect(0, 0, width, height);
     for(const [idx, bot] of bots.entries()) {
         bot.update(time);
+    }
+    for(const [idx, trail] of paintTrails.entries()) {
+        trail.render();
     }
     requestAnimationFrame(update);
 }
