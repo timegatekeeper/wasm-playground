@@ -179,7 +179,7 @@ const vectorMovements = [
     [0,1],[-1,1],[-1,0],[-1,-1]
 ];
 
-const angleMovements = [0, 0, 45, 90, 135, 180, 225, 270, 315]; 
+const angleMovements = [0, 0, 45, 90, 135, 180, 225, 280, 315]; 
 
 function update(time) {
     context.clearRect(0, 0, width, height);
