@@ -63,7 +63,12 @@ class PaintTrail {
         this.points = [];
     }
     add(location) {
-        this.points.push(location);
+        this.points.push(new Location(location.x, location.y));
+    }
+    updateLastPoint(location) {
+        let lastPoint = this.points.pop();
+        lastPoint = new Location(location.x, location.y);
+        this.points.push(lastPoint);
     }
     render()
     {
@@ -98,6 +103,7 @@ class PaintBot {
     update(time) {
         const wasmExports = this.commander.exports; 
         let direction = wasmExports.update(time, this.position.x, this.position.y);
+        this.lastHeading = this.heading;
         this.heading = toRadians(direction);
         let wasmColour = wasmExports.getColour();
         let wasmPenDown =  wasmExports.isPenDown();
@@ -117,8 +123,14 @@ class PaintBot {
     forward(distance) {
         this.position.moveHeadingDistance(this.heading, distance);
         //to do  - add point when heading change , otherwise edit
+        let headingChanged = (this.heading != this.lastHeading);
         if(this.penDown) {
-            this.paintTrails[this.paintTrails.length-1].add(new Location(this.position.x, this.position.y));
+            let lastPaintTrail = this.paintTrails[this.paintTrails.length-1];
+            if(headingChanged) {
+                lastPaintTrail.add(this.position);
+            } else {
+                lastPaintTrail.updateLastPoint(this.position);
+            } 
         }
     }
     render() {
