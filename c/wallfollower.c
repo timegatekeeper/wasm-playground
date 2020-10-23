@@ -1,10 +1,13 @@
 typedef enum Direction {HALT, NORTH, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST, NORTHWEST} Direction;
+typedef enum { false, true } bool;
 
 int x = 0;
 int y = 0;
 unsigned int colour = 0;
 int height;
 int width;
+
+bool penDown = true;
 
 int counter = 0;
 int stepsToTurn = 1;
@@ -38,6 +41,7 @@ Direction update(time, currentX, currentY) {
 
         case SOUTH:
             //colour = 0x8A2BE2;
+            penDown = false;
             if((currentY+20) >= height) {
                 heading = WEST;
             }
@@ -45,6 +49,7 @@ Direction update(time, currentX, currentY) {
 
         case WEST:
             //colour = 0xB8860B;
+            penDown = true;
             if((currentX-20) <= 0) {
                 heading = NORTH;
             }
@@ -55,4 +60,8 @@ Direction update(time, currentX, currentY) {
 
 int getColour() {
     return colour;
+}
+
+bool isPenDown() {
+    return penDown;
 }

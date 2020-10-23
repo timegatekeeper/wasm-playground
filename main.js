@@ -85,6 +85,7 @@ class PaintBot {
         this.name = name;
         this.position = position;
         this.colour = colour;
+        this.penDown = true;
         this.commander = commander;
         //heading is stored in radians
         this.heading = 0;
@@ -99,20 +100,25 @@ class PaintBot {
         let direction = wasmExports.update(time, this.position.x, this.position.y);
         this.heading = toRadians(angleMovements[direction]);
         let wasmColour = wasmExports.getColour();
-        if(this.colour != wasmColour){
+        let wasmPenDown =  wasmExports.isPenDown();
+        let newTrail = !this.isPenDown && wasmPenDown;
+        if((this.colour != wasmColour) || newTrail){
             console.log(this.name, "colour change from",
              cssColourFromInteger(this.colour), "to",
              cssColourFromInteger(wasmColour));
             this.colour = wasmColour;
             this.paintTrails.push(new PaintTrail(
                 new Location(this.position.x, this.position.y), this.colour));
-        }   
+        }
+        this.penDown = wasmPenDown;
         this.forward(5)
         this.render();
     }
     forward(distance) {
         this.position.moveHeadingDistance(this.heading, distance);
-        this.paintTrails[this.paintTrails.length-1].add(new Location(this.position.x, this.position.y));
+        if(this.penDown) {
+            this.paintTrails[this.paintTrails.length-1].add(new Location(this.position.x, this.position.y));
+        }
     }
     render() {
         context.save();
