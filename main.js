@@ -65,6 +65,7 @@ class PaintBot {
         this.state.heading = toRadians(direction);
         this.state.colour = this.wasmExports.getColour();
         this.state.penDown =  this.wasmExports.isPenDown();
+        this.state.lineWidth = this.wasmExports.getLineWidth();
         this.state.lastPosition = new Location(this.state.position.x, this.state.position.y);
         this.state.position.moveHeadingDistance(this.state.heading, 5);
     }
@@ -86,6 +87,7 @@ class PaintBot {
         {
             context.beginPath();
             context.strokeStyle = cssColourFromInteger(this.state.colour);
+            context.lineWidth = this.state.lineWidth;
             context.moveTo(this.state.lastPosition.x, this.state.lastPosition.y);
             context.lineTo(this.state.position.x, this.state.position.y);
             context.stroke();

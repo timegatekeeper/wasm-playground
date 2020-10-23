@@ -1,8 +1,4 @@
-typedef enum 
-{
-    false, 
-    true 
-} bool;
+#include "bot.h"
 
 typedef enum 
 {
@@ -12,19 +8,7 @@ typedef enum
     kGoRight
 } State;
 
-int x = 0;
-int y = 0;
-unsigned int colour = 0;
-int height;
-int width;
 State botState = kGoUp;
-
-bool penDown = true;
-
-int counter = 0;
-int stepsToTurn = 1;
-
-int heading = 0;
 
 void init(spawnX, spawnY, spawnColour, canvasWidth, canvasHeight) {
     x = spawnX;
@@ -47,6 +31,8 @@ int update(int time, int currentX, int currentY)
     {
         heading = 0;
         colour = 0xff6347;
+        lineWidth = 1;
+        penDown = true;
         if((currentY-20) <= 0) 
         {
             setState(kGoRight);
@@ -57,6 +43,7 @@ int update(int time, int currentX, int currentY)
     {
         heading = 90;
         colour = 0x0000FF;
+        lineWidth = 5;
         if((currentX+20) >= width) 
         {
             setState(kGoDown);
@@ -67,7 +54,7 @@ int update(int time, int currentX, int currentY)
     {
         heading = 180;
         colour = 0x8A2BE2;
-        penDown = false;
+        lineWidth = 10;
         if((currentY+20) >= height) {
             setState(kGoLeft);
         }
@@ -77,7 +64,8 @@ int update(int time, int currentX, int currentY)
     {
         heading = 270;
         colour = 0xB8860B;
-        penDown = true;
+        lineWidth = 5;
+        penDown = false;
         if((currentX-20) <= 0) {
             setState(kGoUp);
         }
@@ -87,14 +75,4 @@ int update(int time, int currentX, int currentY)
         break;
     }
     return heading;
-}
-
-//to do: maybe add a get heading?
-
-int getColour() {
-    return colour;
-}
-
-bool isPenDown() {
-    return penDown;
 }
