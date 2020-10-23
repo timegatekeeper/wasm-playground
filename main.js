@@ -135,11 +135,14 @@ class PaintBot {
         context.restore();
     }
     renderTrail() {
-        context.beginPath();
-        context.strokeStyle = cssColourFromInteger(this.colour);
-        context.moveTo(this.lastPosition.x, this.lastPosition.y);
-        context.lineTo(this.position.x, this.position.y);
-        context.stroke();
+        if (this.penDown)
+        {
+            context.beginPath();
+            context.strokeStyle = cssColourFromInteger(this.colour);
+            context.moveTo(this.lastPosition.x, this.lastPosition.y);
+            context.lineTo(this.position.x, this.position.y);
+            context.stroke();
+        }
     }
 };
 
@@ -193,12 +196,26 @@ const vectorMovements = [
 const angleMovements = [0, 0, 45, 90, 135, 180, 225, 280, 315]; 
 
 function update(time) {
+    // Clear the context
     context.clearRect(0, 0, width, height);
+
+    // Put the last frame
+    context.putImageData(imageData, 0, 0);
+
+    // Update the state and render the trails for each bot
     for(const [idx, bot] of bots.entries()) {
         bot.update(time);
         bot.renderTrail();
     }
-    imageData = context.getImageData();
+
+    // Take a snaphot of the trail
+    imageData = context.getImageData(0, 0, width, height);
+
+    // render the bot
+    for(const [idx, bot] of bots.entries()) {
+        bot.renderBot();
+    }
+
     requestAnimationFrame(update);
 }
 
