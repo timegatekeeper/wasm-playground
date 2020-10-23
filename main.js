@@ -2,6 +2,7 @@ const canvasElement = document.querySelector('canvas');
 const context = canvasElement.getContext('2d');
 const height = canvasElement.height;
 const width = canvasElement.width;
+let imageData = new ImageData(width, height);
 //this is a global store of compiled web assembly modules
 let modules = [];
 //this is a global store of instantiated modules
@@ -117,23 +118,10 @@ class PaintBot {
                 new Location(this.position.x, this.position.y), this.colour));
         }
         this.penDown = wasmPenDown;
-        this.forward(5)
-        this.render();
+        this.lastPosition = new Location(this.position.x, this.position.y);
+        this.position.moveHeadingDistance(this.heading, 5);
     }
-    forward(distance) {
-        this.position.moveHeadingDistance(this.heading, distance);
-        //to do  - add point when heading change , otherwise edit
-        let headingChanged = (this.heading != this.lastHeading);
-        if(this.penDown) {
-            let lastPaintTrail = this.paintTrails[this.paintTrails.length-1];
-            if(headingChanged) {
-                lastPaintTrail.add(this.position);
-            } else {
-                lastPaintTrail.updateLastPoint(this.position);
-            } 
-        }
-    }
-    render() {
+    renderBot() {
         context.save();
         context.translate(this.position.x, this.position.y);
         context.rotate(this.heading);
@@ -145,9 +133,13 @@ class PaintBot {
         context.lineTo(-10,10);
         context.fill();
         context.restore();
-        for(const [idx, trail] of this.paintTrails.entries()) {
-            trail.render();
-        }
+    }
+    renderTrail() {
+        context.beginPath();
+        context.strokeStyle = cssColourFromInteger(this.colour);
+        context.moveTo(this.lastPosition.x, this.lastPosition.y);
+        context.lineTo(this.position.x, this.position.y);
+        context.stroke();
     }
 };
 
@@ -204,7 +196,9 @@ function update(time) {
     context.clearRect(0, 0, width, height);
     for(const [idx, bot] of bots.entries()) {
         bot.update(time);
+        bot.renderTrail();
     }
+    imageData = context.getImageData();
     requestAnimationFrame(update);
 }
 
