@@ -1,1 +1,0 @@
-asc add.ts -b add.wasm -O3z --runtime=none  --noExportMemory

@@ -22,3 +22,13 @@ And add WebAssembly as a target:
 ``` bash 
 $ rustup target add wasm32-unknown-unknown
 ```
+
+## Build
+
+To build, we use the rust compiler `rustc`, with wasm as a target:
+
+```bash
+$ rustc --target wasm32-unknown-unknown -O --crate-type=cdylib add.rs -o add.wasm
+```
+
+We've provided a `build.sh` helper script if you don't want to type out the whole command each time.
