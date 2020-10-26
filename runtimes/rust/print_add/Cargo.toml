@@ -1,0 +1,11 @@
+[package]
+name = "print_add"
+version = "0.1.0"
+authors = ["Juliette <juliette.carter@bbc.co.uk>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+wasmtime = "0.20.0" 
+anyhow = "1.0.33"
