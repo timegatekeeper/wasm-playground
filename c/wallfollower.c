@@ -11,8 +11,6 @@ typedef enum
 State botState = kGoUp;
 
 void init(spawnX, spawnY, spawnColour, canvasWidth, canvasHeight) {
-    x = spawnX;
-    y = spawnY;
     colour = spawnColour;
     width = canvasWidth;
     height = canvasHeight;
@@ -23,7 +21,8 @@ void setState(State newBotState)
     botState = newBotState;
 }
 
-int update(int time, int currentX, int currentY) 
+//int update(int time, int currentX, int currentY) 
+void update(int time, int currentX, int currentY)
 {
     switch (botState)
     {
@@ -74,5 +73,27 @@ int update(int time, int currentX, int currentY)
     default:
         break;
     }
+    //return heading;
+}
+
+// Getters and setters 
+int getHeading()
+{
     return heading;
+}
+
+int getColour() {
+    return colour;
+}
+
+bool isPenDown() {
+    return penDown;
+}
+
+int getLineWidth() {
+    return lineWidth;
+}
+bool isBotMoving()
+{
+    return move;
 }

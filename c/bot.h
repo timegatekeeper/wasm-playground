@@ -3,9 +3,7 @@ typedef enum
     false, 
     true 
 } bool;
-// the location is stored in the wasm module
-int x = 0;
-int y = 0;
+
 // the canvas size is also stored in the wasm module
 int height = 0;
 int width = 0;
@@ -17,22 +15,21 @@ int colour = 0x000000;
 bool penDown = true;
 // Width of the line to draw in pixels
 int lineWidth = 1;
+// Should the bot move or not?
+bool move = true;
 
 
 //called by the runtime after the bot is created
 void init(int spawnX, int spawnY, int spawnColour, int canvasWidth, int canvasHeight);
 
 //called by the runtime every frame
-int update(int time, int currentX, int currentY);
+// int update(int time, int currentX, int currentY);
 
-int getColour() {
-    return colour;
-}
+// Update is called every frame by the runtime. You can update your bot state here.
+void update(int time, int currentX, int currentY);
 
-bool isPenDown() {
-    return penDown;
-}
-
-int getLineWidth() {
-    return lineWidth;
-}
+int getHeading();
+int getColour();
+bool isPenDown();
+int getLineWidth();
+bool isBotMoving();
