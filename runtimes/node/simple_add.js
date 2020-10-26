@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 /*
     Node scsript to run the add.wasm module.
     Gives an example of how to load a wasm module into js.
@@ -8,12 +6,14 @@ const fs = require('fs');
     By default it will pick "../../wat/add.wasm".
 */
 
+const fs = require('fs');
+
 var args = process.argv.slice(2);
 let wasm_file;
 if (args.length) {
     wasm_file = args[0]; // use file given on command line
 } else {
-    wasm_file = "../../wat/add.wasm"; // default add file to read
+    wasm_file = "../../examples/wat/add.wasm"; // default add file to read
 }
 
 const bytes = fs.readFileSync(wasm_file);

@@ -9,7 +9,7 @@
 */
 
 const fs = require('fs');
-const bytes = fs.readFileSync('../../c/print_add.wasm');
+const bytes = fs.readFileSync('../../examples/c/print_add.wasm');
 
 
 (async () => { 
