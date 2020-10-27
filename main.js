@@ -3,7 +3,7 @@ const context = canvasElement.getContext('2d');
 const height = canvasElement.height;
 const width = canvasElement.width;
 const fileSelectorElement = document.querySelector("input");
-fileSelectorElement.addEventListener("change", handleFiles, false);
+// fileSelectorElement.addEventListener("change", handleFiles, false);
 async function loadModule(moduleBinary) {
     console.log(moduleBinary);
 }
