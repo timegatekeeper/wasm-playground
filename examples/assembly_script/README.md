@@ -9,12 +9,12 @@ You will need:
 * Node.js 
 * NPM (reccomended using node version manager + installing 12.0)
 
-Then type:
-```bash
-$ npm init
-$ npm install --save @assemblyscript/loader
-$ npm install --save-dev assemblyscript
-```
+To install the assembly script compiler `asc`, call the `setup.sh` script that we've provided for you.
+
+This should:
+* download the npm modules required
+* put `asc` into your path (only for your current terminal session).
+
 ## Build
 
 To build, we use the assembly script compiler `asc`: 

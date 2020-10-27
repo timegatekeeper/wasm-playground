@@ -1,5 +1,7 @@
 .DS_Store        
-runtimes/rust/print_add/Cargo.lock
+**Cargo.lock
 runtimes/rust/print_add/target/
-runtimes/rust/simple_add/Cargo.lock
 runtimes/rust/simple_add/target/
+
+**node_modules/
+**package-lock.json
