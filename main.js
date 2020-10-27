@@ -70,13 +70,16 @@ class PaintBot {
         }
     }
     update(time) {
-        let direction = this.wasmExports.update(time, this.state.position.x, this.state.position.y);
-        this.state.heading = toRadians(direction);
+        this.wasmExports.update(time, this.state.position.x, this.state.position.y);
+        this.state.heading = toRadians(this.wasmExports.getHeading());
         this.state.colour = this.wasmExports.getColour();
         this.state.penDown =  this.wasmExports.isPenDown();
         this.state.lineWidth = this.wasmExports.getLineWidth();
         this.state.lastPosition = new Location(this.state.position.x, this.state.position.y);
-        this.state.position.moveHeadingDistance(this.state.heading, 5);
+        if (this.wasmExports.isBotMoving())
+        {
+            this.state.position.moveHeadingDistance(this.state.heading, 5);
+        }
     }
     renderBot() {
         context.save();
