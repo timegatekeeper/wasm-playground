@@ -2,7 +2,7 @@
 #!/bin/bash
 
 # Bots to compile
-BOTS=(wallfollower spiral house)
+BOTS=(template)
 
 for i in "${BOTS[@]}"
 do

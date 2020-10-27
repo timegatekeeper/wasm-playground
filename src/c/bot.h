@@ -28,8 +28,27 @@ void init(int spawnX, int spawnY, int spawnColour, int canvasWidth, int canvasHe
 // Update is called every frame by the runtime. You can update your bot state here.
 void update(int time, int currentX, int currentY);
 
-int getHeading();
-int getColour();
-bool isPenDown();
-int getLineWidth();
-bool isBotMoving();
+int getHeading()
+{
+    return heading;
+}
+
+int getColour()
+{
+    return colour;
+}
+
+bool isPenDown()
+{
+    return penDown;
+}
+
+int getLineWidth()
+{
+    return lineWidth;
+}
+
+bool isBotMoving()
+{
+    return move;
+}
