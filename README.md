@@ -9,6 +9,24 @@ Repo for WebAssembly Workshop 04/11/20.
 2. Compile your first wasm module and run it outside the browser.
 3. Get creative: create a wasm Paint Bot.
 
+## Setup
+
+The first part of this workshop will be to demonstrate how to compile to wasm from different languages. For this, you'll need a number of tools (compilers for the different languages).
+
+We've provided a docker container which has all of these tools pre-installed. For this, you will need to **install docker**. To build and run the container, run the script:
+```
+$ ./run_docker.sh
+```
+
+Alternatively, you can also install the tools localy yourself. You'll need:
+* `node` (recent version > 13)
+* `clang` and `llvm` for C & C++. You need a version that has wasm32 as a target. On mac, you can simply do `brew install llvm`, which will install both.
+* Rust toolchain. See [rust example README](examples/rust/README.md)
+* `asc`, the Assembly Script compiler. See [AssemblyScript example README](examples/assembly_script/README.md)
+* `wat2wasm` and `wasm2wat` executables. Get release builds for your platform [here](https://github.com/WebAssembly/wabt/releases).
+* python (you should already have it by default)
+
+
 ## Structure of the repo
 
 This repo contains all the source code and code templates needed for tasks 2 and 3 in the schedule. 
@@ -32,6 +50,8 @@ The second example is implemented in Rust. It pulls in `wasmtime` (a rust-based 
 The creative task requires each participant to choose their preferred language and build a Paint Bot which can be compiled to wasm. All the compiled Paint Bots will then be loaded on a single client canvas to make one combined piece of art.
 
 In the `src` folder, we have example bots for each for the languages. You can use those as inspiration when desigining your own Paint Bots.
+
+See the creative task [README](./src/README.md)
 
 **Designing your bot**
 TODO: Create README in src folder which explains the game loop and the bot api 
